@@ -1,8 +1,11 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
+# coding: utf8
 """
 Auteur: Gabriel Desharnais
 
 Module permetant de télécharger des images depuis les serveurs du NSIDC
+
+Module that download images from NSIDC servers
 """
 import logMod
 import requests
@@ -10,14 +13,13 @@ import datetime
 import os
 import sys  
 
-reload(sys)  
-sys.setdefaultencoding('utf8')
 #URL de base du serveur de données
 URL="https://n5eil01u.ecs.nsidc.org"
+URL2="https://e4ftl01.cr.usgs.gov"
 #Préfixe à l'addresse de téléchargement
 PreTel='<A HREF="'
 #
-Nom="DownNSIDC"
+Nom="Downloader"
 class telecharger:
     def __init__(self,produit,utilisateur,motdepasse,date="",delta=0,tuiles=[],log=logMod.Log("",nolog=True),output=""):
         self.log=log
@@ -30,76 +32,80 @@ class telecharger:
         self.date=date
         self.delta=delta+1
         self.tuiles=tuiles
+        self.session=requests.session()
         if output[-1]=="\\":
             self.output=output
         else:
             self.output=output+"\\"
+        self.authentification(self.session,"https://n5eil01u.ecs.nsidc.org/MOST")
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
         liste={}
         
-        with requests.session() as s:
-            r=s.get(URL)
-            rs=r.text
-            i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
-            while not rs[i:].find(PreTel)==-1:
-                i=rs[i:].find(PreTel)+len(PreTel)+i
-                e=rs[i:].find('"')+i
-                f=rs[e:].find('/')+e
-                g=rs[f:].find(' ')+f
-                #raw_input( rs[i:e])
-                liste[rs[f+1:g]]=URL+rs[i:e]
-                i=g
+        r=self.session.get(URL)
+        rs=r.text
+        i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
+        while not rs[i:].find(PreTel)==-1:
+            i=rs[i:].find(PreTel)+len(PreTel)+i
+            e=rs[i:].find('"')+i
+            f=rs[e:].find('/')+e
+            g=rs[f:].find(' ')+f
+            #raw_input( rs[i:e])
+            liste[rs[f+1:g]]=URL+rs[i:e]
+            i=g
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()
         ListeProduit={}
+        
         for l in ListeSource:
-            with requests.session() as s:
-                r=self.authentification(s,ListeSource[l])
-                rs=r.text
-                rss=rs.upper()
-                #raw_input(rs)
-                i=rss.find(PreTel)#+len(PreTel)
-                
-                for x in range(6):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                #raw_input( rss[i:])
-                while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    e=rss[i:].find('"')+i
-                    f=rss[e:].find('>')+e+1
-                    g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                    
-                    ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
-                    i=g
-        return ListeProduit
-    def listeToutesDates(self):
-        ListeDates={}
-        l=self.listeProduit()
-        with requests.session() as s:
-            r=self.authentification(s,l[self.produit])
+            r=self.session.get(ListeSource[l])
+            
+            #open("result.html","wb").write(s.get(ListeSource[l]).content)
             rs=r.text
             rss=rs.upper()
-                #raw_input(rs)
+            #raw_input(rs)
             i=rss.find(PreTel)#+len(PreTel)
-                
+            
             for x in range(6):
                 i=rss[i:].find(PreTel)+len(PreTel)+i
             #raw_input( rss[i:])
+                
             while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
                 i=rss[i:].find(PreTel)+len(PreTel)+i
                 i=rss[i:].find(PreTel)+len(PreTel)+i
                 e=rss[i:].find('"')+i
                 f=rss[e:].find('>')+e+1
                 g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                if not rs[f:g].lower().find("dprecentinserts")==-1:
-                    break
-                ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
+                #raw_input( URL+'/'+l+'/'+rs[i:e])
+                    
+                ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
                 i=g
+                
+        return ListeProduit
+    def listeToutesDates(self):
+        ListeDates={}
+        l=self.listeProduit()
+        r=self.session.get(l[self.produit])
+        rs=r.text
+        rss=rs.upper()
+            #raw_input(rs)
+        i=rss.find(PreTel)#+len(PreTel)
+                
+        for x in range(6):
+            i=rss[i:].find(PreTel)+len(PreTel)+i
+        #raw_input( rss[i:])
+        while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
+            i=rss[i:].find(PreTel)+len(PreTel)+i
+            i=rss[i:].find(PreTel)+len(PreTel)+i
+            e=rss[i:].find('"')+i
+            f=rss[e:].find('>')+e+1
+            g=rss[f:].find('/')+f
+                #raw_input( URL+'/'+l+'/'+rs[i:e])
+            if not rs[f:g].lower().find("dprecentinserts")==-1:
+                break
+            ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
+            i=g
         return ListeDates
     def listeDates(self):
         liste={}
@@ -116,6 +122,7 @@ class telecharger:
             yield "{:%Y.%m.%d}".format(date+datetime.timedelta(days=i))
     def authentification(self,session,url):
         #Devrait éventuellement déterminer lorsque l'authentification ne réussi pas
+        
         form={}
         formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
         r=session.get(url)
@@ -138,9 +145,8 @@ class telecharger:
         return e
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
-        with requests.session() as s:
-            r=self.authentification(s,addresseDate)
-            rs=r.text
+        r=self.session.get(addresseDate)
+        rs=r.text
         for tuile in self.tuiles:
             tuile=tuile.lower()         #Sur le site le nom des tuiles est en minuscule
             i=0
@@ -161,17 +167,16 @@ class telecharger:
         return listefichiers
     def telechargerUnfichier(self,addresse,nom):
         #Devrait vérifier l'existance d'un fichier sur le disque avant de le télécharger
-        with requests.session() as s:
-            r=self.authentification(s,addresse)
-            with open(self.output+nom,'wb') as f:
-                tailleFichier = int(r.headers['content-length'])#Ça va récupérer la taille du fichier à télécharger
-                f.write(r.content)
-            reussi= tailleFichier==os.path.getsize(self.output+nom)
-            #Si le fichier télécharger a la taille théorique alors celle-ci est retournée.
-            if reussi:
-                return tailleFichier
-            else:
-                return None
+        r=self.session.get(addresse)
+        with open(self.output+nom,'wb') as f:
+            tailleFichier = int(r.headers['content-length'])#Ça va récupérer la taille du fichier à télécharger
+            f.write(r.content)
+        reussi= tailleFichier==os.path.getsize(self.output+nom)
+        #Si le fichier télécharger a la taille théorique alors celle-ci est retournée.
+        if reussi:
+            return tailleFichier
+        else:
+            return None
 
     def telechargerTout(self):
         echecDeSuite=0
@@ -219,6 +224,7 @@ class telecharger:
                     LListeDate.append(date)
                 yield date, listeTrucsTelecharges
 def main():
-    pass
+    for x,y in telecharger("myd10a2.006","username","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
+        print(x,y)
 if __name__=='__main__':
     main()

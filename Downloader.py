@@ -37,75 +37,79 @@ class telecharger:
             self.output=output
         else:
             self.output=output+"\\"
-        self.authentification(self.session,"https://n5eil01u.ecs.nsidc.org/MOST")
+        self.authentification(self.session)
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
         liste={}
-        
-        r=self.session.get(URL)
-        rs=r.text
-        i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
-        while not rs[i:].find(PreTel)==-1:
-            i=rs[i:].find(PreTel)+len(PreTel)+i
-            e=rs[i:].find('"')+i
-            f=rs[e:].find('/')+e
-            g=rs[f:].find(' ')+f
-            #raw_input( rs[i:e])
-            liste[rs[f+1:g]]=URL+rs[i:e]
-            i=g
+        def listeSourceNSICD():
+            r=self.session.get(URL)
+            rs=r.text
+            i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
+            while not rs[i:].find(PreTel)==-1:
+                i=rs[i:].find(PreTel)+len(PreTel)+i
+                e=rs[i:].find('"')+i
+                f=rs[e:].find('/')+e
+                g=rs[f:].find(' ')+f
+                #raw_input( rs[i:e])
+                liste[rs[f+1:g]]=URL+rs[i:e]
+                i=g
+        listeSourceNSICD()
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()
         ListeProduit={}
-        
-        for l in ListeSource:
-            r=self.session.get(ListeSource[l])
+        def listeProduitNSICD():
+            for l in ListeSource:
+                r=self.session.get(ListeSource[l])
+                
+                #open("result.html","wb").write(s.get(ListeSource[l]).content)
+                rs=r.text
+                rss=rs.upper()
+                #raw_input(rs)
+                i=rss.find(PreTel)#+len(PreTel)
+                
+                for x in range(6):
+                    i=rss[i:].find(PreTel)+len(PreTel)+i
+                #raw_input( rss[i:])
+                    
+                while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
+                    i=rss[i:].find(PreTel)+len(PreTel)+i
+                    i=rss[i:].find(PreTel)+len(PreTel)+i
+                    e=rss[i:].find('"')+i
+                    f=rss[e:].find('>')+e+1
+                    g=rss[f:].find('/')+f
+                    #raw_input( URL+'/'+l+'/'+rs[i:e])
+                        
+                    ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
+                    i=g
+        listeProduitNSICD()
+        return ListeProduit
+    def listeToutesDates(self):
+        ListeDates={}
+        def listeToutesDatesNSICD():
             
-            #open("result.html","wb").write(s.get(ListeSource[l]).content)
+            l=self.listeProduit()
+            r=self.session.get(l[self.produit])
             rs=r.text
             rss=rs.upper()
-            #raw_input(rs)
+                #raw_input(rs)
             i=rss.find(PreTel)#+len(PreTel)
-            
+                    
             for x in range(6):
                 i=rss[i:].find(PreTel)+len(PreTel)+i
             #raw_input( rss[i:])
-                
             while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
                 i=rss[i:].find(PreTel)+len(PreTel)+i
                 i=rss[i:].find(PreTel)+len(PreTel)+i
                 e=rss[i:].find('"')+i
                 f=rss[e:].find('>')+e+1
                 g=rss[f:].find('/')+f
-                #raw_input( URL+'/'+l+'/'+rs[i:e])
-                    
-                ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
+                    #raw_input( URL+'/'+l+'/'+rs[i:e])
+                if not rs[f:g].lower().find("dprecentinserts")==-1:
+                    break
+                ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
                 i=g
-                
-        return ListeProduit
-    def listeToutesDates(self):
-        ListeDates={}
-        l=self.listeProduit()
-        r=self.session.get(l[self.produit])
-        rs=r.text
-        rss=rs.upper()
-            #raw_input(rs)
-        i=rss.find(PreTel)#+len(PreTel)
-                
-        for x in range(6):
-            i=rss[i:].find(PreTel)+len(PreTel)+i
-        #raw_input( rss[i:])
-        while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-            i=rss[i:].find(PreTel)+len(PreTel)+i
-            i=rss[i:].find(PreTel)+len(PreTel)+i
-            e=rss[i:].find('"')+i
-            f=rss[e:].find('>')+e+1
-            g=rss[f:].find('/')+f
-                #raw_input( URL+'/'+l+'/'+rs[i:e])
-            if not rs[f:g].lower().find("dprecentinserts")==-1:
-                break
-            ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
-            i=g
+        listeToutesDatesNSICD()
         return ListeDates
     def listeDates(self):
         liste={}
@@ -120,29 +124,30 @@ class telecharger:
         date=datetime.date(int(self.date[:4]),int(self.date[5:7]),int(self.date[8:10]))
         for i in range(self.delta):
             yield "{:%Y.%m.%d}".format(date+datetime.timedelta(days=i))
-    def authentification(self,session,url):
+    def authentification(self,session):
         #Devrait éventuellement déterminer lorsque l'authentification ne réussi pas
-        
-        form={}
-        formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
-        r=session.get(url)
-        rs=r.text
-        for name in formfield:
-            utf8formA=rs.find('name="'+name+'"')
-            utf8formA+= rs[utf8formA:].find('value=\"') +len('value=\"')
-            utf8formB=utf8formA+rs[utf8formA:].find('\"')
+        def authentificationNSIDC():
+            form={}
+            formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
+            r=session.get(URL+"/MOST")
+            rs=r.text
+            for name in formfield:
+                utf8formA=rs.find('name="'+name+'"')
+                utf8formA+= rs[utf8formA:].find('value=\"') +len('value=\"')
+                utf8formB=utf8formA+rs[utf8formA:].find('\"')
 
-            form[name]=rs[utf8formA:utf8formB]
+                form[name]=rs[utf8formA:utf8formB]
+        
 #print form
-        form["username"]=self.utilisateur
-        form["password"]=self.motdepasse
-        h=session.post('https://urs.earthdata.nasa.gov/login',data=form)
-        import time
-        time.sleep(3)
-        a=h.text.find('redirectURL = "')+len('redirectURL = "')
-        b=h.text[a:].find('"')+a
-        e=session.get(h.text[a:b])
-        return e
+            form["username"]=self.utilisateur
+            form["password"]=self.motdepasse
+            h=session.post('https://urs.earthdata.nasa.gov/login',data=form)
+            import time
+            time.sleep(3)
+            a=h.text.find('redirectURL = "')+len('redirectURL = "')
+            b=h.text[a:].find('"')+a
+            session.get(h.text[a:b])
+        authentificationNSIDC()
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
         r=self.session.get(addresseDate)

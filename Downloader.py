@@ -126,6 +126,9 @@ class telecharger:
             yield "{:%Y.%m.%d}".format(date+datetime.timedelta(days=i))
     def authentification(self,session):
         #Devrait éventuellement déterminer lorsque l'authentification ne réussi pas
+        def authentificationUSGS():
+            h=session.get("https://e4ftl01.cr.usgs.gov/MOLT/MOD09A1.005/2000.02.18/MOD09A1.A2000049.h00v08.005.2006268222532.hdf",auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
+            h=session.get(h.headers["Location"],auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
         def authentificationNSIDC():
             form={}
             formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
@@ -148,6 +151,7 @@ class telecharger:
             b=h.text[a:].find('"')+a
             session.get(h.text[a:b])
         authentificationNSIDC()
+        authentificationUSGS()
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
         r=self.session.get(addresseDate)
@@ -229,7 +233,7 @@ class telecharger:
                     LListeDate.append(date)
                 yield date, listeTrucsTelecharges
 def main():
-    for x,y in telecharger("myd10a2.006","username","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
+    for x,y in telecharger("myd10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
         print(x,y)
 if __name__=='__main__':
     main()

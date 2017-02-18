@@ -90,7 +90,7 @@ class telecharger:
         r=self.session.get(l[self.produit])
         rs=r.text
         #regex that select only date of format YYYY.MM.DD
-        prog=re.compile('[0-9]{4}\.[0-9]{2}\.[0-9]')
+        prog=re.compile('[0-9]{4}\.[0-9]{2}\.[0-9]{2}')
         #find all match of this re
         m=prog.findall(rs)
         #Add match to dictionnary
@@ -140,25 +140,20 @@ class telecharger:
         authentificationUSGS()
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
+        typeOfFile=["\.hdf","\.hdf\.xml"]
+        #Get list of file for date
         r=self.session.get(addresseDate)
         rs=r.text
         for tuile in self.tuiles:
-            tuile=tuile.lower()         #Sur le site le nom des tuiles est en minuscule
-            i=0
-            for h in range(3):
-                i=rs[i:].find(tuile)+len(tuile)+i        #Éliminer le fichier jpg
-            #Trouver les fichier xml et hdf
-            while not rs[i:].find(tuile)==-1 :
-                i=rs[i:].find(tuile)+i
-                
-                i=rs[i:].find(PreTel.lower())+len(PreTel)+i
-                e=rs[i:].find('"')+i
-                f=rs[e:].find('>')+e+1
-                g=rs[f:].find('<')+f
-                
-                
-                listefichiers[rs[f:g]]=addresseDate+rs[i:e]
-                i=g
+            for typ in typeOfFile:
+                try:
+                    #Regex to find the file to download
+                    prog=re.compile('href="[A-Z,a-z,0-9,_,\.]{1,}'+tuile+'[A-Z,a-z,0-9,_,\.]{1,}'+typ)
+                    #Find first occurence of this re
+                    m=prog.search(rs)
+                    listefichiers[m.group(0)[6:]]=addresseDate+"/"+m.group(0)[6:]
+                except:
+                    pass
         return listefichiers
     def telechargerUnfichier(self,addresse,nom):
         #Devrait vérifier l'existance d'un fichier sur le disque avant de le télécharger

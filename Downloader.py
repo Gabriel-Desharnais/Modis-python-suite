@@ -27,7 +27,7 @@ class telecharger:
         self.tempsRestant=0             #Le temps restant à la tâche
         self.debit=0                    #La vitesse de téléchargement
         self.progression=0              #La progression en pourcentage
-        self.produit=produit.lower()
+        self.produit=produit.upper()
         self.utilisateur=utilisateur
         self.motdepasse=motdepasse
         self.date=date
@@ -77,37 +77,25 @@ class telecharger:
                     prog=re.compile('href="[A-Z,a-z,0-9,\.,_]{1,}/"')
                     #find all match of this re
                     m=prog.findall(rs)
+                    #Add match to dictionnary
                     for prod in m:
-                        ListeProduit[prod[6:-2]]=ListeSource[l]+"/"+prod[6:-2]
+                        ListeProduit[prod[6:-2].upper()]=ListeSource[l]+"/"+prod[6:-2]
                 except:
                     pass
         return ListeProduit
     def listeToutesDates(self):
         ListeDates={}
-        def listeToutesDatesNSICD():
-            
-            l=self.listeProduit()
-            r=self.session.get(l[self.produit])
-            rs=r.text
-            rss=rs.upper()
-                #raw_input(rs)
-            i=rss.find(PreTel)#+len(PreTel)
-                    
-            for x in range(6):
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-            #raw_input( rss[i:])
-            while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-                e=rss[i:].find('"')+i
-                f=rss[e:].find('>')+e+1
-                g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                if not rs[f:g].lower().find("dprecentinserts")==-1:
-                    break
-                ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
-                i=g
-        listeToutesDatesNSICD()
+        l=self.listeProduit()
+        #Get the date list for the product
+        r=self.session.get(l[self.produit])
+        rs=r.text
+        #regex that select only date of format YYYY.MM.DD
+        prog=re.compile('[0-9]{4}\.[0-9]{2}\.[0-9]')
+        #find all match of this re
+        m=prog.findall(rs)
+        #Add match to dictionnary
+        for date in m:
+            ListeDates[date]=l[self.produit]+"/"+date
         return ListeDates
     def listeDates(self):
         liste={}

@@ -12,6 +12,7 @@ import requests
 import datetime
 import os
 import sys  
+import re
 
 #URL de base du serveur de données
 URL="https://n5eil01u.ecs.nsidc.org"
@@ -41,7 +42,15 @@ class telecharger:
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
         liste={}
+        def listeSourceUSGS():
+            h='<img src="/icons/folder.gif" alt="[DIR]"> <a href="'
+            prog=re.compile('\<img src="/icons/folder\.gif" alt="\[DIR\]"\> \<a href=".{1,}/">')
+            m=prog.findall(self.session.get(URL2).text)
+            for e in m:
+                nom=e[len(h):-3]
+                liste[nom]=URL2+"/"+nom
         def listeSourceNSICD():
+            
             r=self.session.get(URL)
             rs=r.text
             i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
@@ -53,7 +62,9 @@ class telecharger:
                 #raw_input( rs[i:e])
                 liste[rs[f+1:g]]=URL+rs[i:e]
                 i=g
+        listeSourceUSGS()
         listeSourceNSICD()
+        print(liste)
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()

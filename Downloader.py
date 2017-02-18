@@ -12,6 +12,7 @@ import requests
 import datetime
 import os
 import sys  
+import re
 
 #URL de base du serveur de données
 URL="https://n5eil01u.ecs.nsidc.org"
@@ -26,7 +27,7 @@ class telecharger:
         self.tempsRestant=0             #Le temps restant à la tâche
         self.debit=0                    #La vitesse de téléchargement
         self.progression=0              #La progression en pourcentage
-        self.produit=produit.lower()
+        self.produit=produit.upper()
         self.utilisateur=utilisateur
         self.motdepasse=motdepasse
         self.date=date
@@ -41,7 +42,15 @@ class telecharger:
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
         liste={}
+        def listeSourceUSGS():
+            h='<img src="/icons/folder.gif" alt="[DIR]"> <a href="'
+            prog=re.compile('\<img src="/icons/folder\.gif" alt="\[DIR\]"\> \<a href=".{1,}/">')
+            m=prog.findall(self.session.get(URL2).text)
+            for e in m:
+                nom=e[len(h):-3]
+                liste[nom]=URL2+"/"+nom
         def listeSourceNSICD():
+            
             r=self.session.get(URL)
             rs=r.text
             i=rs.find("NSIDC DATA ARE AVAILABLE VIA HTTPS VIA THE LINKS BELOW.")
@@ -51,65 +60,42 @@ class telecharger:
                 f=rs[e:].find('/')+e
                 g=rs[f:].find(' ')+f
                 #raw_input( rs[i:e])
-                liste[rs[f+1:g]]=URL+rs[i:e]
+                liste[rs[f+1:g]]=URL+rs[i:e-1]
                 i=g
+        listeSourceUSGS()
         listeSourceNSICD()
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()
         ListeProduit={}
-        def listeProduitNSICD():
-            for l in ListeSource:
-                r=self.session.get(ListeSource[l])
-                
-                #open("result.html","wb").write(s.get(ListeSource[l]).content)
-                rs=r.text
-                rss=rs.upper()
-                #raw_input(rs)
-                i=rss.find(PreTel)#+len(PreTel)
-                
-                for x in range(6):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                #raw_input( rss[i:])
-                    
-                while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    e=rss[i:].find('"')+i
-                    f=rss[e:].find('>')+e+1
-                    g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                        
-                    ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
-                    i=g
-        listeProduitNSICD()
+        for l in ListeSource:
+                try:
+                    #get the web page that list all product
+                    r=self.session.get(ListeSource[l])
+                    rs=r.text
+                    #regex that select only product links
+                    prog=re.compile('href="[A-Z,a-z,0-9,\.,_]{1,}/"')
+                    #find all match of this re
+                    m=prog.findall(rs)
+                    #Add match to dictionnary
+                    for prod in m:
+                        ListeProduit[prod[6:-2].upper()]=ListeSource[l]+"/"+prod[6:-2]
+                except:
+                    pass
         return ListeProduit
     def listeToutesDates(self):
         ListeDates={}
-        def listeToutesDatesNSICD():
-            
-            l=self.listeProduit()
-            r=self.session.get(l[self.produit])
-            rs=r.text
-            rss=rs.upper()
-                #raw_input(rs)
-            i=rss.find(PreTel)#+len(PreTel)
-                    
-            for x in range(6):
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-            #raw_input( rss[i:])
-            while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-                i=rss[i:].find(PreTel)+len(PreTel)+i
-                e=rss[i:].find('"')+i
-                f=rss[e:].find('>')+e+1
-                g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                if not rs[f:g].lower().find("dprecentinserts")==-1:
-                    break
-                ListeDates[rs[f:g].lower()]=l[self.produit]+rs[i:e]
-                i=g
-        listeToutesDatesNSICD()
+        l=self.listeProduit()
+        #Get the date list for the product
+        r=self.session.get(l[self.produit])
+        rs=r.text
+        #regex that select only date of format YYYY.MM.DD
+        prog=re.compile('[0-9]{4}\.[0-9]{2}\.[0-9]{2}')
+        #find all match of this re
+        m=prog.findall(rs)
+        #Add match to dictionnary
+        for date in m:
+            ListeDates[date]=l[self.produit]+"/"+date
         return ListeDates
     def listeDates(self):
         liste={}
@@ -154,25 +140,20 @@ class telecharger:
         authentificationUSGS()
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
+        typeOfFile=["\.hdf","\.hdf\.xml"]
+        #Get list of file for date
         r=self.session.get(addresseDate)
         rs=r.text
         for tuile in self.tuiles:
-            tuile=tuile.lower()         #Sur le site le nom des tuiles est en minuscule
-            i=0
-            for h in range(3):
-                i=rs[i:].find(tuile)+len(tuile)+i        #Éliminer le fichier jpg
-            #Trouver les fichier xml et hdf
-            while not rs[i:].find(tuile)==-1 :
-                i=rs[i:].find(tuile)+i
-                
-                i=rs[i:].find(PreTel.lower())+len(PreTel)+i
-                e=rs[i:].find('"')+i
-                f=rs[e:].find('>')+e+1
-                g=rs[f:].find('<')+f
-                
-                
-                listefichiers[rs[f:g]]=addresseDate+rs[i:e]
-                i=g
+            for typ in typeOfFile:
+                try:
+                    #Regex to find the file to download
+                    prog=re.compile('href="[A-Z,a-z,0-9,_,\.]{1,}'+tuile+'[A-Z,a-z,0-9,_,\.]{1,}'+typ)
+                    #Find first occurence of this re
+                    m=prog.search(rs)
+                    listefichiers[m.group(0)[6:]]=addresseDate+"/"+m.group(0)[6:]
+                except:
+                    pass
         return listefichiers
     def telechargerUnfichier(self,addresse,nom):
         #Devrait vérifier l'existance d'un fichier sur le disque avant de le télécharger

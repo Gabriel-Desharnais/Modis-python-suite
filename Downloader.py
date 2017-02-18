@@ -60,40 +60,27 @@ class telecharger:
                 f=rs[e:].find('/')+e
                 g=rs[f:].find(' ')+f
                 #raw_input( rs[i:e])
-                liste[rs[f+1:g]]=URL+rs[i:e]
+                liste[rs[f+1:g]]=URL+rs[i:e-1]
                 i=g
         listeSourceUSGS()
         listeSourceNSICD()
-        print(liste)
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()
         ListeProduit={}
-        def listeProduitNSICD():
-            for l in ListeSource:
-                r=self.session.get(ListeSource[l])
-                
-                #open("result.html","wb").write(s.get(ListeSource[l]).content)
-                rs=r.text
-                rss=rs.upper()
-                #raw_input(rs)
-                i=rss.find(PreTel)#+len(PreTel)
-                
-                for x in range(6):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                #raw_input( rss[i:])
-                    
-                while not rss[i:].find(PreTel)==-1 and (not rs[i:].find("<tr")==-1):
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    i=rss[i:].find(PreTel)+len(PreTel)+i
-                    e=rss[i:].find('"')+i
-                    f=rss[e:].find('>')+e+1
-                    g=rss[f:].find('/')+f
-                    #raw_input( URL+'/'+l+'/'+rs[i:e])
-                        
-                    ListeProduit[rs[f:g].lower()]=URL+'/'+l+'/'+rs[i:e]
-                    i=g
-        listeProduitNSICD()
+        for l in ListeSource:
+                try:
+                    #get the web page that list all product
+                    r=self.session.get(ListeSource[l])
+                    rs=r.text
+                    #regex that select only product links
+                    prog=re.compile('href="[A-Z,a-z,0-9,\.,_]{1,}/"')
+                    #find all match of this re
+                    m=prog.findall(rs)
+                    for prod in m:
+                        ListeProduit[prod[6:-2]]=ListeSource[l]+"/"+prod[6:-2]
+                except:
+                    pass
         return ListeProduit
     def listeToutesDates(self):
         ListeDates={}

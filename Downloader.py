@@ -173,11 +173,11 @@ class telecharger:
         while True:
             try:
                 #On va chercher toutes les dates disponible sur le serveur de la NSIDC pour un produit en particulier
-                self.log.log('c',Nom,'Lister les Dates disponibles sur le serveur.')
+                self.log.log('c',Nom,u'Lister les Dates disponibles sur le serveur.')
                 ListeDate=self.listeDates()
-                self.log.log('r',Nom,'Lister les Dates disponibles sur le serveur.')
+                self.log.log('r',Nom,u'Lister les Dates disponibles sur le serveur.')
                 #Chaque date est entrée comme clé dans un dictionnaire et une adresse du dossier de cette date y est assignée
-                self.log.log('i',Nom,str(len(ListeDate))+' date(s) ont été trouvé.')
+                self.log.log('i',Nom,str(len(ListeDate))+u' date(s) ont été trouvé.')
                 LListeDate=list(ListeDate)
                 break
             except:
@@ -190,20 +190,20 @@ class telecharger:
             listeTrucsTelecharges=[]
             #Pour chacune des dates, Une liste des adresse de téléchargement est produite
             try:
-                self.log.log('c',Nom,'Lister les fichier de téléchargement disponibles pour '+date)
+                self.log.log('c',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
                 ListeFichier=self.listefichiersATelecharger(ListeDate[date])
-                self.log.log('r',Nom,'Lister les fichier de téléchargement disponibles pour '+date)
-                self.log.log('i',Nom,str(len(ListeFichier))+' fichier(s) ont été trouvés pour '+date)
+                self.log.log('r',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
+                self.log.log('i',Nom,str(len(ListeFichier))+u' fichier(s) ont été trouvés pour '+date)
                 for fichier in ListeFichier:
-                    self.log.log('c',Nom,'Télécharment pour le fichier '+fichier+' du '+date)
+                    self.log.log('c',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
                     
                     r=self.telechargerUnfichier(ListeFichier[fichier],fichier)
                     if not r==None:
                         listeTrucsTelecharges.append(fichier)
-                        self.log.log('r',Nom,'Télécharment pour le fichier '+fichier+' du '+date)
-                        self.log.log('i',Nom,'Le fichier '+fichier+' du '+date+' a une taille de '+str(r))
+                        self.log.log('r',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
+                        self.log.log('i',Nom,u'Le fichier '+fichier+u' du '+date+u' a une taille de '+str(r))
                     else:
-                        self.log.log('e',Nom,'Télécharment pour le fichier '+fichier+' du '+date)
+                        self.log.log('e',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
                     with open(self.output+'listfile'+self.produit.upper()+'.txt','a') as f:
                         f.write(fichier+'\n')
                 echecDeSuite=0

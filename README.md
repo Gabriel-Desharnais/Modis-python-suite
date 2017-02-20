@@ -5,7 +5,7 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 - [ ] Works on python 2
 
 - [X] Download from NSIDC
-- [ ] Download from USGS
+- [X] Download from USGS
 
 ### simple example
 this code will download every day availlable between 2010-02-20 and 2010-03-12
@@ -31,4 +31,4 @@ Ce module python permet de télécharger en masse des images satelites Modis dep
 - [X] Fonctionne sur python 3
 - [ ] Fonctionne sur python 2
 - [X] Télécharge depuis NSIDC
-- [ ] Télécharge depuis USGS
+- [X] Télécharge depuis USGS

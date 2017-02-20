@@ -2,7 +2,7 @@
 This python module can bulk download Modis satelite images from the NSIDC and USGS servers. It is compatible with both python 2 and python 3.
 
 - [X] Works on python 3
-- [ ] Works on python 2
+- [X] Works on python 2
 
 - [X] Download from NSIDC
 - [X] Download from USGS
@@ -29,6 +29,6 @@ for x,y in doo.telechargerTout():
 Ce module python permet de télécharger en masse des images satelites Modis depuis les serveurs de NSIDC et USGS. Il est compatible avec python 2 et python 3.
 
 - [X] Fonctionne sur python 3
-- [ ] Fonctionne sur python 2
+- [X] Fonctionne sur python 2
 - [X] Télécharge depuis NSIDC
 - [X] Télécharge depuis USGS

@@ -53,7 +53,11 @@ class Log:
                 if echo=="":
                     echo=self.echo
                 if echo:
-                    print(self.TIMESTAMP.format(datetime.datetime.now())+programme+':'+self.error[sorte]+message)
+                    try:
+                        print(self.TIMESTAMP.format(datetime.datetime.now())+programme+':'+self.error[sorte]+message)
+                    except:
+                        print self.TIMESTAMP.format(datetime.datetime.now())+programme+':'+self.error[sorte]+message
+                    
             
 
 def main():

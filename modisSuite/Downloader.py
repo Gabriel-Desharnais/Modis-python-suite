@@ -7,7 +7,7 @@ Module permetant de télécharger des images depuis les serveurs du NSIDC
 
 Module that download images from NSIDC servers
 """
-import logMod
+from . import logMod
 import requests
 import datetime
 import os

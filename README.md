@@ -7,6 +7,8 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 - [X] Download from NSIDC
 - [X] Download from USGS
 
+### To install
+to install on python2 type `python2 setup.py install` to install on python3 type `python3 setup.py install`. python2 and python3 command may be different on your computer.
 ### simple example
 this code will download every day availlable between 2010-02-20 and 2010-03-12
 ```python

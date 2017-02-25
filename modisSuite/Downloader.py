@@ -7,7 +7,7 @@ Module permetant de télécharger des images depuis les serveurs du NSIDC
 
 Module that download images from NSIDC servers
 """
-import logMod
+from . import logMod
 import requests
 import datetime
 import os
@@ -214,7 +214,7 @@ class telecharger:
                     LListeDate.append(date)
                 yield date, listeTrucsTelecharges
 def main():
-    for x,y in telecharger("myd10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
+    for x,y in telecharger("mod10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
         print(x,y)
 if __name__=='__main__':
     main()

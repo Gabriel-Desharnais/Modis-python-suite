@@ -26,6 +26,8 @@ doo=modisSuite.downloader(prod,username,password,date=startdate,delta=d,tuiles=t
 for x,y in doo.telechargerTout():
   print(x,y)
 ```
+### Note
+This product as been tested on Mageia 5 and mint 18.1 with both python 2 and python 3.
 
 ## Version Française
 Ce module python permet de télécharger en masse des images satelites Modis depuis les serveurs de NSIDC et USGS. Il est compatible avec python 2 et python 3.
@@ -54,3 +56,6 @@ doo=modisSuite.downloader(prod,utilisateur,motdepasse,date=datedebut,delta=nombJ
 for x,y in doo.telechargerTout():
   print(x,y)
 ```
+
+### Note
+Ce produit a été testé avec Mageia 5 et mint 18.1 sur python 2 et python 3.

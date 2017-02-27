@@ -27,7 +27,15 @@ for x,y in doo.telechargerTout():
   print(x,y)
 ```
 ### Note
-This product as been tested on Mageia 5 and mint 18.1 with both python 2 and python 3.
+#### python 2
+- [ ] tested on windows
+- [X] tested on Mint 18.1
+- [ ] tested on Mageia 5
+
+#### python 3
+- [ ] tested on windows
+- [X] tested on Mint 18.1
+- [X] tested on Mageia 5
 
 ## Version Française
 Ce module python permet de télécharger en masse des images satelites Modis depuis les serveurs de NSIDC et USGS. Il est compatible avec python 2 et python 3.
@@ -58,4 +66,12 @@ for x,y in doo.telechargerTout():
 ```
 
 ### Note
-Ce produit a été testé avec Mageia 5 et mint 18.1 sur python 2 et python 3.
+#### python 2
+- [ ] testé sur windows
+- [X] testé sur Mint 18.1
+- [ ] testé sur Mageia 5
+
+#### python 3
+- [ ] testé sur windows
+- [X] testé sur Mint 18.1
+- [X] testé sur Mageia 5

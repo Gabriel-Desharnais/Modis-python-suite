@@ -33,7 +33,7 @@ for x,y in doo.telechargerTout():
 - [ ] tested on Mageia 5
 
 #### python 3
-- [ ] tested on windows
+- [X] tested on windows
 - [X] tested on Mint 18.1
 - [X] tested on Mageia 5
 

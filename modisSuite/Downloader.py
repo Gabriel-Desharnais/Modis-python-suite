@@ -8,6 +8,7 @@ Module permetant de télécharger des images depuis les serveurs du NSIDC
 Module that download images from NSIDC servers
 """
 from . import logMod
+from . import imageObject
 import requests
 import datetime
 import os
@@ -188,10 +189,13 @@ class telecharger:
         echecDeSuite=0
         for date in LListeDate:
             listeTrucsTelecharges=[]
+            image=imageObject.imageModis([])
             #Pour chacune des dates, Une liste des adresse de téléchargement est produite
             try:
                 self.log.log('c',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
-                ListeFichier=self.listefichiersATelecharger(ListeDate[date])
+                #Créer l'image qui sera retournée
+                image=imageObject.imageModis(self.listefichiersATelecharger(ListeDate[date]))
+                ListeFichier=image.files
                 self.log.log('r',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
                 self.log.log('i',Nom,str(len(ListeFichier))+u' fichier(s) ont été trouvés pour '+date)
                 for fichier in ListeFichier:
@@ -207,12 +211,13 @@ class telecharger:
                     with open(self.output+'listfile'+self.produit.upper()+'.txt','a') as f:
                         f.write(fichier+'\n')
                 echecDeSuite=0
-                yield date, listeTrucsTelecharges
+                yield image
             except requests.exceptions.ConnectionError:
                 echecDeSuite+=1
                 if echecDeSuite<3:
                     LListeDate.append(date)
-                yield date, listeTrucsTelecharges
+                
+                yield image#date, listeTrucsTelecharges
 def main():
     for x,y in telecharger("mod10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
         print(x,y)

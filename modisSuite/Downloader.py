@@ -193,23 +193,26 @@ class telecharger:
             #Pour chacune des dates, Une liste des adresse de téléchargement est produite
             try:
                 self.log.log('c',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
+                #Créer la liste des fichier à télécharger
+                dic=self.listefichiersATelecharger(ListeDate[date])
+                listFile=[imageObject.Afile(name,date,dic[name],name.split(".")[-1]) for name in dic]
                 #Créer l'image qui sera retournée
-                image=imageObject.imageModis(self.listefichiersATelecharger(ListeDate[date]))
+                image=imageObject.imageModis(listFile)
                 ListeFichier=image.files
                 self.log.log('r',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
                 self.log.log('i',Nom,str(len(ListeFichier))+u' fichier(s) ont été trouvés pour '+date)
                 for fichier in ListeFichier:
-                    self.log.log('c',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
+                    self.log.log('c',Nom,u'Télécharment pour le fichier '+fichier.name+u' du '+date)
                     
-                    r=self.telechargerUnfichier(ListeFichier[fichier],fichier)
+                    r=self.telechargerUnfichier(fichier.link,fichier.name)
                     if not r==None:
-                        listeTrucsTelecharges.append(fichier)
-                        self.log.log('r',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
-                        self.log.log('i',Nom,u'Le fichier '+fichier+u' du '+date+u' a une taille de '+str(r))
+                        listeTrucsTelecharges.append(fichier.name)
+                        self.log.log('r',Nom,u'Télécharment pour le fichier '+fichier.name+u' du '+date)
+                        self.log.log('i',Nom,u'Le fichier '+fichier.name+u' du '+date+u' a une taille de '+str(r))
                     else:
-                        self.log.log('e',Nom,u'Télécharment pour le fichier '+fichier+u' du '+date)
+                        self.log.log('e',Nom,u'Télécharment pour le fichier '+fichier.name+u' du '+date)
                     with open(self.output+'listfile'+self.produit.upper()+'.txt','a') as f:
-                        f.write(fichier+'\n')
+                        f.write(fichier.name+'\n')
                 echecDeSuite=0
                 yield image
             except requests.exceptions.ConnectionError:

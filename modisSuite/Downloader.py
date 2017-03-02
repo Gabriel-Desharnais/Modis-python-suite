@@ -35,10 +35,10 @@ class telecharger:
         self.delta=delta+1
         self.tuiles=tuiles
         self.session=requests.session()
-        if output[-1]=="\\":
+        if output[-1]=="/":
             self.output=output
         else:
-            self.output=output+"\\"
+            self.output=output+"/"
         self.authentification(self.session)
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
@@ -219,8 +219,8 @@ class telecharger:
                 
                 yield image#date, listeTrucsTelecharges
 def main():
-    for x,y in telecharger("mod10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
-        print(x,y)
+    for x in telecharger("mod10a2.006","user","password",date="2010-02-20",delta=20,tuiles=['h12v04','h13v04'],output="test/").telechargerTout():
+        print(x.files)
 if __name__=='__main__':
     main()
     

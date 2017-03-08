@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import modisSuite
 setup(
     name='modisSuite',
-    version='0.9.1',
+    version='0.9.5',
     description='Python module to download modis data',
     url='https://github.com/Gabriel-Desharnais/Modis-python-suite',
     author='Gabriel Desharnais',
@@ -10,8 +10,8 @@ setup(
     license='MIT',
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Intended Audience :: geophysicist',
-        'Topic :: Geophysics :: Modis',
+        'Intended Audience :: Science/Research',
+        'Topic :: Scientific/Engineering :: Atmospheric Science',
         
         'License :: OSI Approved :: MIT License',
         

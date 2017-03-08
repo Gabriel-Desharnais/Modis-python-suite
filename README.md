@@ -7,12 +7,12 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 - [X] Download from NSIDC
 - [X] Download from USGS
 
-For more information go to [https://gabriel-desharnais.github.io/Modis-python-suite/](url)
+For more information go to [https://gabriel-desharnais.github.io/Modis-python-suite/]
 
 ### To install
 to install on python2 type `sudo python2 setup.py install` to install on python3 type `sudo python3 setup.py install`. python2 and python3 command may be different on your computer.
 
-You have to create an acount on **earthdata** [https://urs.earthdata.nasa.gov/](url) and approve the applications **LP DAAC Data Pool** and **NSIDC_DATAPOOL_OPS**.
+You have to create an acount on **earthdata** [https://urs.earthdata.nasa.gov/] and approve the applications **LP DAAC Data Pool** and **NSIDC_DATAPOOL_OPS**.
 ### simple example
 this code will download every day availlable between 2010-02-20 and 2010-03-12
 ```python
@@ -50,11 +50,11 @@ Ce module python permet de télécharger en masse des images satelites Modis dep
 - [X] Télécharge depuis NSIDC
 - [X] Télécharge depuis USGS
 
-Pour plus d'information aller sur [https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil](url)
+Pour plus d'information aller sur [https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil]
 ### Pour installer
 Pour installer sur python2 `sudo python2 setup.py install` pour installer sur python3 `sudo python3 setup.py install`. Les noms de commandes `python2` et `python3`peuvent varier selon la configuration de votre ordinateur.
 
-Vous devez créer un compte sur **earthdata** [https://urs.earthdata.nasa.gov/](url). Il faut aussi approuvrer les applications **LP DAAC Data Pool** et **NSIDC_DATAPOOL_OPS**.
+Vous devez créer un compte sur **earthdata** [https://urs.earthdata.nasa.gov/]. Il faut aussi approuvrer les applications **LP DAAC Data Pool** et **NSIDC_DATAPOOL_OPS**.
 ### exemple simple
 ```python
 import modisSuite

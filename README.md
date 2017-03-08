@@ -7,6 +7,8 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 - [X] Download from NSIDC
 - [X] Download from USGS
 
+For more information go to [https://gabriel-desharnais.github.io/Modis-python-suite/](url)
+
 ### To install
 to install on python2 type `sudo python2 setup.py install` to install on python3 type `sudo python3 setup.py install`. python2 and python3 command may be different on your computer.
 
@@ -48,6 +50,7 @@ Ce module python permet de télécharger en masse des images satelites Modis dep
 - [X] Télécharge depuis NSIDC
 - [X] Télécharge depuis USGS
 
+Pour plus d'information aller sur [https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil](url)
 ### Pour installer
 Pour installer sur python2 `sudo python2 setup.py install` pour installer sur python3 `sudo python3 setup.py install`. Les noms de commandes `python2` et `python3`peuvent varier selon la configuration de votre ordinateur.
 

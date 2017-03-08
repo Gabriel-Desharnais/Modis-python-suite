@@ -9,6 +9,8 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 
 ### To install
 to install on python2 type `sudo python2 setup.py install` to install on python3 type `sudo python3 setup.py install`. python2 and python3 command may be different on your computer.
+
+You have to create an acount on **earthdata** [https://urs.earthdata.nasa.gov/](url) and approve the applications **LP DAAC Data Pool** and **NSIDC_DATAPOOL_OPS**.
 ### simple example
 this code will download every day availlable between 2010-02-20 and 2010-03-12
 ```python
@@ -23,8 +25,8 @@ tiles=['h12v04','h13v04']
 folder="test/" #will download all file in the folder test
 doo=modisSuite.downloader(prod,username,password,date=startdate,delta=d,tuiles=tiles,output=folder)
 # telechargerTout is a constructor each itteration of it will download a day
-for x,y in doo.telechargerTout():
-  print(x,y)
+for day in doo.telechargerTout():
+  print([aFile.name for aFile in day.files])
 ```
 ### Note
 #### python 2
@@ -42,12 +44,14 @@ Ce module python permet de télécharger en masse des images satelites Modis dep
 
 - [X] Fonctionne sur python 3
 - [X] Fonctionne sur python 2
+
 - [X] Télécharge depuis NSIDC
 - [X] Télécharge depuis USGS
 
 ### Pour installer
 Pour installer sur python2 `sudo python2 setup.py install` pour installer sur python3 `sudo python3 setup.py install`. Les noms de commandes `python2` et `python3`peuvent varier selon la configuration de votre ordinateur.
 
+Vous devez créer un compte sur **earthdata** [https://urs.earthdata.nasa.gov/](url). Il faut aussi approuvrer les applications **LP DAAC Data Pool** et **NSIDC_DATAPOOL_OPS**.
 ### exemple simple
 ```python
 import modisSuite
@@ -61,8 +65,8 @@ tuiles=['h12v04','h13v04']
 sortie="test/" #Tous les fichiers téléchargés seront enregistrés dans le dosier «test»
 doo=modisSuite.downloader(prod,utilisateur,motdepasse,date=datedebut,delta=nombJour,tuiles=tuiles,output=sortie)
 # telechargerTout is a constructor each itteration of it will download a day
-for x,y in doo.telechargerTout():
-  print(x,y)
+for jour in doo.telechargerTout():
+  print([fichier.name for fichier in jour])
 ```
 
 ### Note

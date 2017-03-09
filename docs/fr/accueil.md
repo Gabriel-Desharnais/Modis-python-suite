@@ -2,7 +2,7 @@
 Ce module python permet de télécharger en masse des images satelites Modis depuis les serveurs de NSIDC et USGS. Il est compatible avec python 2 et python 3.
 
 # Comment installer
-Au préalable, vous devez installer *python* (2 ou 3), installer *pip* et approuvrer les applications **LP DAAC Data Pool** et **NSIDC_DATAPOOL_OPS** sur votre compte **earthdata** ( [https://urs.earthdata.nasa.gov/] ) .
+Au préalable, vous devez installer *python* (2 ou 3), installer *pip* et approuvrer les applications **LP DAAC Data Pool** et **NSIDC_DATAPOOL_OPS** sur votre compte **earthdata** ([https://urs.earthdata.nasa.gov/](https://urs.earthdata.nasa.gov/)).
 
 Pour installer, entrer `pip install modisSuite` dans une console en tant qu'administrateur. 
 

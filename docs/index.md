@@ -1,7 +1,7 @@
 # Description
 This python module can bulk download Modis satelite images from the NSIDC and USGS servers. It is compatible with both python 2 and python 3.
 # How to install
-To install you must have installed python (2 or 3), have an **earthdata** acount with the applications **LP DAAC Data Pool** and **NSIDC_DATAPOOL_OPS** approved ([https://urs.earthdata.nasa.gov/]) and have pip installed on your computer.
+To install you must have installed python (2 or 3), have an **earthdata** acount with the applications **LP DAAC Data Pool** and **NSIDC_DATAPOOL_OPS** approved ([https://urs.earthdata.nasa.gov/](https://urs.earthdata.nasa.gov/)) and have pip installed on your computer.
 
 Then you just type `pip install modisSuite` with the administrative right in the console.
 # Simple example

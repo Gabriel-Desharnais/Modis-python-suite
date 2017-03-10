@@ -24,6 +24,6 @@ for day in doo.telechargerTout():
   print([aFile.name for aFile in day.files])
 ```
 # Documentation
-You can find all documention *here*
+You can find all documention [here](https://gabriel-desharnais.github.io/Modis-python-suite/en/package)
 # Ohter language
 [version française](https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil)

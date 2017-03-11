@@ -14,5 +14,6 @@ In the section **module** of this document you can find every module included in
 - [modisSuite.logMod.Log](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/Log)
 
 # function
+No function
 # constant
-
+No constant

@@ -1,2 +1,2 @@
 theme: jekyll-theme-merlot
-include: [__test__.md]
+include: [__test__/test.md]

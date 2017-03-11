@@ -1,2 +1,2 @@
 theme: jekyll-theme-merlot
-include: [__test__]
+include: [en/__init__]

@@ -35,10 +35,7 @@ class telecharger:
         self.delta=delta+1
         self.tuiles=tuiles
         self.session=requests.session()
-        if output[-1]=="/":
-            self.output=output
-        else:
-            self.output=output+"/"
+        self.output=output
         self.authentification(self.session)
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
@@ -159,10 +156,10 @@ class telecharger:
     def telechargerUnfichier(self,addresse,nom):
         #Devrait vérifier l'existance d'un fichier sur le disque avant de le télécharger
         r=self.session.get(addresse)
-        with open(self.output+nom,'wb') as f:
+        with open(os.path.join(self.output, nom),'wb') as f:
             tailleFichier = int(r.headers['content-length'])#Ça va récupérer la taille du fichier à télécharger
             f.write(r.content)
-        reussi= tailleFichier==os.path.getsize(self.output+nom)
+        reussi= tailleFichier==os.path.getsize(os.path.join(self.output, nom))
         #Si le fichier télécharger a la taille théorique alors celle-ci est retournée.
         if reussi:
             return tailleFichier
@@ -211,7 +208,7 @@ class telecharger:
                         self.log.log('i',Nom,u'Le fichier '+fichier.name+u' du '+date+u' a une taille de '+str(r))
                     else:
                         self.log.log('e',Nom,u'Télécharment pour le fichier '+fichier.name+u' du '+date)
-                    with open(self.output+'listfile'+self.produit.upper()+'.txt','a') as f:
+                    with open(os.path.join(self.output, 'listfile'+self.produit.upper()+'.txt'),'a') as f:
                         f.write(fichier.name+'\n')
                 echecDeSuite=0
                 yield image

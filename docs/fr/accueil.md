@@ -22,7 +22,7 @@ sortie="test/" #Tous les fichiers téléchargés seront enregistrés dans le dos
 doo=modisSuite.downloader(prod,utilisateur,motdepasse,date=datedebut,delta=nombJour,tuiles=tuiles,output=sortie)
 # telechargerTout is a constructor each itteration of it will download a day
 for jour in doo.telechargerTout():
-  print([fichier.name for fichier in jour])
+  print([fichier.name for fichier in jour.files])
 ```
 # Documentation
 Toute la documentation peut être trouvée *ici*.

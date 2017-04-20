@@ -23,7 +23,7 @@ PreTel='<A HREF="'
 #
 Nom="Downloader"
 class telecharger:
-    def __init__(self,produit,utilisateur,motdepasse,date="",delta=0,tuiles=[],log=logMod.Log("",nolog=True),output=""):
+    def __init__(self,produit,utilisateur,motdepasse,date="",delta=0,tuiles=[],log=logMod.Log("",nolog=True),output="",ignore=[]):
         self.log=log
         self.tempsRestant=0             #Le temps restant à la tâche
         self.debit=0                    #La vitesse de téléchargement
@@ -34,6 +34,7 @@ class telecharger:
         self.date=date
         self.delta=delta+1
         self.tuiles=tuiles
+        self.ignore=[da.replace("-",".") for da in ignore]
         self.session=requests.session()
         self.output=output
         self.authentification(self.session)
@@ -184,6 +185,11 @@ class telecharger:
                     break
             
         echecDeSuite=0
+        for da in self.ignore:
+            try:
+                LListeDate.remove(da)
+            except ValueError:
+                pass
         for date in LListeDate:
             listeTrucsTelecharges=[]
             image=imageObject.imageModis([])

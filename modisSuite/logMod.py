@@ -35,13 +35,17 @@ echo=""        bool: Permet de changer momentanément la propriété d'affichage
                      des entées (True --> Affichage à l'écran)
 """
 import datetime
+import os
 class Log:
     def __init__(self,repertoire,fichier="date",echo=False,nolog=False):
         if fichier == "date":
             fichier ='log_{:%Y_%m_%d_%H_%M_%S}.log'.format(datetime.datetime.now())
-        if (not repertoire=="") and (not repertoire[-1]=="\\"):
-            repertoire+="\\"
-        self.acces=repertoire+fichier
+        if not repertoire=="":
+            self.acces = os.path.join(repertoire,fichier)
+        else:
+            self.acces = fichier
+          
+        repertoire+fichier
         self.echo=echo
         self.TIMESTAMP = '[{:%Y-%m-%d %H:%M:%S}]'
         self.error={'e':' ERREUR ','w':' AVERTISSEMENT ','i':' INFORMATION ','r':' RÉUSSI ','c':' COMMENCÉ '}

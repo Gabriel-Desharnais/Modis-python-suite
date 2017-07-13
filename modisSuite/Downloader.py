@@ -44,10 +44,13 @@ class telecharger:
         def listeSourceUSGS():
             h='<img src="/icons/folder.gif" alt="[DIR]"> <a href="'
             prog=re.compile('\<img src="/icons/folder\.gif" alt="\[DIR\]"\> \<a href=".{1,}/">')
-            m=prog.findall(self.session.get(URL2).text)
+            zztop=self.session.get(URL2).text
+            m=prog.findall(zztop)
             for e in m:
                 nom=e[len(h):-3]
+                #print(nom)
                 liste[nom]=URL2+"/"+nom
+            
         def listeSourceNSICD():
             
             r=self.session.get(URL)
@@ -59,16 +62,20 @@ class telecharger:
                 f=rs[e:].find('/')+e
                 g=rs[f:].find(' ')+f
                 #raw_input( rs[i:e])
-                liste[rs[f+1:g]]=URL+rs[i:e-1]
+                #print(rs[f+1:g])
+                liste[rs[f+1:g]]=rs[i:e-1]
                 i=g
         listeSourceUSGS()
         listeSourceNSICD()
+        #print(liste)
         return liste
     def listeProduit(self):
         ListeSource=self.listeSource()
         ListeProduit={}
+        #print(ListeSource)
         for l in ListeSource:
                 try:
+                    
                     #get the web page that list all product
                     r=self.session.get(ListeSource[l])
                     rs=r.text
@@ -80,6 +87,8 @@ class telecharger:
                     for prod in m:
                         ListeProduit[prod[6:-2].upper()]=ListeSource[l]+"/"+prod[6:-2]
                 except:
+                    #print("oups",l)
+                    #print(rs)
                     pass
         return ListeProduit
     def listeToutesDates(self):
@@ -119,6 +128,7 @@ class telecharger:
             formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
             r=session.get(URL+"/MOST")
             rs=r.text
+            
             for name in formfield:
                 utf8formA=rs.find('name="'+name+'"')
                 utf8formA+= rs[utf8formA:].find('value=\"') +len('value=\"')
@@ -133,8 +143,13 @@ class telecharger:
             import time
             time.sleep(3)
             a=h.text.find('redirectURL = "')+len('redirectURL = "')
+            
             b=h.text[a:].find('"')+a
-            session.get(h.text[a:b])
+            try:
+                session.get(h.text[a:b])
+            except requests.exceptions.ConnectionError:
+                time.sleep(1)
+                session.get(h.text[a:b])
         authentificationNSIDC()
         authentificationUSGS()
     def listefichiersATelecharger(self,addresseDate):
@@ -169,6 +184,7 @@ class telecharger:
 
     def telechargerTout(self):
         echecDeSuite=0
+        
         while True:
             try:
                 #On va chercher toutes les dates disponible sur le serveur de la NSIDC pour un produit en particulier

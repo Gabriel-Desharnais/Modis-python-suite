@@ -1,0 +1,2 @@
+ 
+def clip(*arg,**args):

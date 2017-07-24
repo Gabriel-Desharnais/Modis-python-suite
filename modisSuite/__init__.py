@@ -3,3 +3,4 @@ from . import logMod
 from . import imageObject
 from . import Downloader
 from .mosaic import mosaic
+from .clip import clip

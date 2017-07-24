@@ -5,11 +5,12 @@ class imageModis:
     def __init__(self,files,*arg,**args):
         self.files=files
 class Afile:
-    def __init__(self,name,date,link,typ,*arg,**args):
+    def __init__(self,name,date,link,typ,path,*arg,**args):
         self.name=name
         self.date=date
         self.typ=typ
         self.link=link
+        self.path=path
         self.size=0
         self.tile=0
         self.product=0

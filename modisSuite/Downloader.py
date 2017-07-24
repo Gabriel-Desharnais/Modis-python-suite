@@ -214,7 +214,7 @@ class telecharger:
                 self.log.log('c',Nom,u'Lister les fichier de téléchargement disponibles pour '+date)
                 #Créer la liste des fichier à télécharger
                 dic=self.listefichiersATelecharger(ListeDate[date])
-                listFile=[imageObject.Afile(name,date,dic[name],name.split(".")[-1]) for name in dic]
+                listFile=[imageObject.Afile(name,date,dic[name],name.split(".")[-1],os.path.join(self.output, name)) for name in dic]
                 #Créer l'image qui sera retournée
                 image=imageObject.imageModis(listFile)
                 ListeFichier=image.files

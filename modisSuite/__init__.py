@@ -5,3 +5,4 @@ from . import Downloader
 from .mosaic import mosaic
 from .clip import clip
 from .subset import subset
+from .Compress import compress

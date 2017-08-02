@@ -23,7 +23,7 @@ PreTel='<A HREF="'
 #
 Nom="Downloader"
 class telecharger:
-    def __init__(self,produit,utilisateur,motdepasse,date="",delta=0,tuiles=[],log=logMod.Log("",nolog=True),output="",ignore=[]):
+    def __init__(self,produit,utilisateur,motdepasse,date="",delta=0,tuiles=[],log=logMod.Log("",nolog=True),output="",ignore=[],listfile=False):
         self.log=log
         self.tempsRestant=0             #Le temps restant à la tâche
         self.debit=0                    #La vitesse de téléchargement
@@ -38,6 +38,7 @@ class telecharger:
         self.session=requests.session()
         self.output=output
         self.authentification(self.session)
+        self.listfile=listfile
         log.log('i',Nom,'Objet telecharger créer')
     def listeSource(self):
         liste={}
@@ -230,8 +231,10 @@ class telecharger:
                         self.log.log('i',Nom,u'Le fichier '+fichier.name+u' du '+date+u' a une taille de '+str(r))
                     else:
                         self.log.log('e',Nom,u'Télécharment pour le fichier '+fichier.name+u' du '+date)
-                    with open(os.path.join(self.output, 'listfile'+self.produit.upper()+'.txt'),'a') as f:
-                        f.write(fichier.name+'\n')
+                    if self.listfile==True:
+                        # Write a file list file
+                        with open(os.path.join(self.output, 'listfile'+self.produit.upper()+'.txt'),'a') as f:
+                            f.write(fichier.name+'\n')
                 echecDeSuite=0
                 yield image
             except requests.exceptions.ConnectionError:

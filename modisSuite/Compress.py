@@ -1,3 +1,4 @@
+ # coding: utf8
  # Importations
 from pyhdf.SD import *
 import pyhdf.error 
@@ -7,17 +8,26 @@ from pyhdf.VS import *
 import re
 import numpy as np
 import os
+from modisSuite import logMod
 
-
-
+Nom="modisSuite Compress"
 def compress(*arg,**karg):
 	# This function compress the file with a given compress parameter
 	# compress(file,comression parameter)
 	
 	fileName=arg[0]
 	
+	try:
+		log=karg["log"]
+	except KeyError:
+		log=logMod.Log("",nolog=True)
+	
+	
 	# Open HDF file
-	sd_id = SD(fileName, SDC.WRITE )
+	try:
+		sd_id = SD(fileName, SDC.WRITE )
+	except TypeError:
+		sd_id = SD(fileName.encode('ascii','ignore'), SDC.WRITE )
 	
 	
 	#open evry data set
@@ -26,8 +36,7 @@ def compress(*arg,**karg):
 		try:
 			sds_id.setcompress(*arg[1])         # args depend on compression type
 		except HDF4Error as msg:
-			print(("Error compressing the dataset with params: "
-					"(%d,%d,%d) : %s" % (arg[1]+(msg,))))
+			log.log('e',Nom,"Error compressing the dataset")
 			sds_id.endaccess()
 			sd_id.end()
 			return

@@ -1,3 +1,4 @@
+# coding: utf8
 # Importations
 from pyhdf.SD import *
 import pyhdf.error 
@@ -6,8 +7,9 @@ from pyhdf.HDF import *
 from pyhdf.VS import *
 import re
 import numpy as np
+from modisSuite import logMod
 
-
+Nom="modisSuite Mosaic"
 # Defining the class to manage attributes from the HDF file
 class atribute:
 	def __init__(self,raw,name=""):
@@ -134,7 +136,10 @@ def mosaic(*arg,**args):
 	# This function will take files tranfered in *arg and will mosaic them together and produce a new file
 	# mosaic(file1,[file2,file3,...],endfile)
 	# If only file1 and endfile is given, the function will only produce a copy without any other modification
-	
+	try:
+		log=args["log"]
+	except KeyError:
+		log=logMod.Log("",nolog=True)
 	if len(arg)>2:
 		lfile = arg[:-1]				# This is the list of the NAME of the files to merge
 		newfilename = arg[-1]			# This is the final file NAME
@@ -142,13 +147,16 @@ def mosaic(*arg,**args):
 		lfHDF = []						# This is the list of the FILES to merge
 		latt = []							# This is the list of the ATTRIBUTE "StructMetadata.0" of the files
 		for fil in lfile:
-			lfHDF.append(SD(fil))
+			try:
+				a=SD(fil,SDC.READ)
+			except TypeError:
+				a=SD(fil.encode('ascii','ignore'),SDC.READ)
+			lfHDF.append(a)
 			latt.append(atribute(lfHDF[-1].attributes()["StructMetadata.0"],fil))
 			
 		
 		
 		## Listing all the GRIDS that the new file will have
-		print("Il faut produire un fichier avec les grilles suivantes :")
 		gridlist = []						# This is the list of GRIDS to include in the final file
 
 		for attOfF in latt:
@@ -157,12 +165,9 @@ def mosaic(*arg,**args):
 
 		# remove double entry
 		gridlist = list(set(gridlist))
-		print(gridlist)
-
 
 
 		## Listing all the DATASETS that the new file will have
-		print("Et les datasets suivants :")
 		dslist = []						# This is the list of DATASETS to include in the final file
 		for attOfF in latt:
 			# Should check if any grid ***IMPROVE***
@@ -170,7 +175,6 @@ def mosaic(*arg,**args):
 			
 		# remove double entry
 		dslist = list(set(dslist))
-		print(dslist)
 
 
 		
@@ -189,7 +193,7 @@ def mosaic(*arg,**args):
 
 		for grid in gridlist:
 			# Verification of a grid
-			print("Verification of grid :",grid)
+
 			first = True			# Variable that will enable the construction of the dict
 			paramdict = {}		# Dictionary that keep the actual value that have to be the same
 			
@@ -216,22 +220,20 @@ def mosaic(*arg,**args):
 							if not paramdict[p]==bigG.variable[p]:
 								# Stop merging and return error ***IMPROVE*** 
 								# Maybe do only the things that can be done ***IMPROVE***
-								print("erreur: some truc aren't the same")
+								log.log('e',Nom,"Error dataset are not compatible")
 								
 						# Validation of same Dtype for each datafield
 						go=bigG.GROUP["DataField"].OBJECT
 						for r in go:
-							print("haha :",paramdict[go[r].variable["DataFieldName"]],go[r].variable["DataFieldName"])
 							if not paramdict[go[r].variable["DataFieldName"]]==go[r].variable["DataType"]:
 								# Stop merging and return error ***IMPROVE*** 
 								# Maybe do only the things that can be done ***IMPROVE***
-								print("erreur: some df trucs aren't the same")
+								log.log('e',Nom,"Error dataset are not compatible")
 								
 			# Keep all this info for later it's going to be useful
 			paramMustSimDict[grid]=paramdict
 				
 				
-			print(paramdict)
 
 
 
@@ -241,7 +243,6 @@ def mosaic(*arg,**args):
 # doing just that                                                             #
 ###############################################################################
 
-		print("new informations")
 		gridResolX={}			# Getting the RESOLUTION in the X direction for each grid
 		gridResolY={}			# Getting the RESOLUTION in the Y direction for each grid
 		extremeup={}			# Getting the UPPER coordinates for each grid
@@ -261,7 +262,6 @@ def mosaic(*arg,**args):
 			for attOfF in latt:
 				### Determination of resolution of each grid
 				# ***IMPROVE*** Should check if bigd is none
-				print("Verification of grid :",grid)
 				bigG=attOfF.getgridbyname(grid)				# Getting all the attributes in the grid of a file
 				
 				# Get extreme grid point
@@ -325,13 +325,7 @@ def mosaic(*arg,**args):
 					# Get dtype
 					dtypeDS[ds] = sds.info()[3]
 				except:
-					print("no data set")
-		print(gridResolX,gridResolY)
-		print(extremeup,extremedown,extremeleft,extremeright)
-		print(gridDimX,gridDimY)
-		print(NoValueDS)
-		print(dtypeDS)
-		print(dstogrid)
+					log.log('e',Nom,"no dataset")
 
 
 
@@ -344,8 +338,13 @@ def mosaic(*arg,**args):
 		########## absolute ########################
 		
 		# Open new file
-		hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
-		sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+		try:
+			hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
+			sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+		except TypeError:
+			hdf = HDF(newfilename.encode('ascii','ignore'), HC.WRITE  | HC.CREATE  |HC.TRUNC)
+			sd  =  SD(newfilename.encode('ascii','ignore'), SDC.WRITE | SDC.CREATE )
+		
 		v=hdf.vgstart()
 		vg={}
 		vg1={}
@@ -373,11 +372,10 @@ def mosaic(*arg,**args):
 			
 			# Set fill value
 			fv=NoValueDS[ds]
-			print(ds)
 			try:
 				sds.setfillvalue(NoValueDS[ds])
 			except OverflowError:
-				print("erreur",NoValueDS[ds])
+				log.log('e',Nom,"setfillvalue")
 				sds.setfillvalue(0)
 			## write real data
 			for fil in range(len(latt)):

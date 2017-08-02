@@ -1,3 +1,4 @@
+# coding: utf8
 # Importations
 from pyhdf.SD import *
 import pyhdf.error 
@@ -6,10 +7,10 @@ from pyhdf.HDF import *
 from pyhdf.VS import *
 import re
 import numpy as np
+from modisSuite import logMod
 
 
-
-
+Nom="modisSuite Clip"
 # Defining the class to manage attributes from the HDF file
 class atribute:
 	def __init__(self,raw,name=""):
@@ -137,6 +138,12 @@ def clip(*arg,**args):
 	newfilename = arg[1]
 	coo = args["pixel"]
 	
+	try:
+		log=args["log"]
+	except KeyError:
+		log=logMod.Log("",nolog=True)
+	
+	
 	UPC = coo[0]
 	LMC = coo[1]
 	LOC = coo[2]
@@ -144,7 +151,12 @@ def clip(*arg,**args):
     
 
 	# Should eventually check if files exists and can be read ***IMPROVE***
-	HDFF = SD(oldfile)						# This is the list of the FILES to merge
+	try:
+		HDFF = SD(oldfile,SDC.READ)						# This is the list of the FILES to merge
+	except TypeError:
+		HDFF = SD(oldfile.encode('ascii','ignore'),SDC.READ)						# This is the list of the FILES to merge
+	
+	
 	# This is the list of the ATTRIBUTE "StructMetadata.0" of the files
 	attOfF = atribute(HDFF.attributes()["StructMetadata.0"],oldfile)
 
@@ -152,16 +164,13 @@ def clip(*arg,**args):
 	
 	
 	## Listing all the GRIDS that the new file will have
-	print("Il faut produire un fichier avec les grilles suivantes :")
 
 	gridlist = attOfF.listgridname()[1]		# listgridname return a list of all the grids name
 
-	print(gridlist)
 
 
 
 	## Listing all the DATASETS that the new file will have
-	print("Et les datasets suivants :")
 	
 	# Should check if any grid ***IMPROVE***
 	dslist = attOfF.listdatasetbyname()
@@ -183,7 +192,6 @@ def clip(*arg,**args):
 
 	for grid in gridlist:
 		# Verification of a grid
-		print("Verification of grid :",grid)
 		
 		paramdict = {}		# Dictionary that keep the actual value that have to be the same
 		
@@ -207,7 +215,6 @@ def clip(*arg,**args):
 		paramMustSimDict[grid]=paramdict
 			
 			
-		print(paramdict)
 
 # LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
@@ -217,7 +224,7 @@ def clip(*arg,**args):
 # doing just that                                                             #
 ###############################################################################
 
-	print("new informations")
+
 	gridResolX={}			# Getting the RESOLUTION in the X direction for each grid
 	gridResolY={}			# Getting the RESOLUTION in the Y direction for each grid
 	extremeup={}			# Getting the UPPER coordinates for each grid
@@ -237,7 +244,6 @@ def clip(*arg,**args):
 		
 		### Determination of resolution of each grid
 		# ***IMPROVE*** Should check if bigd is none
-		print("Verification of grid :",grid)
 		bigG=attOfF.getgridbyname(grid)				# Getting all the attributes in the grid of a file
 		
 		# Get extreme grid point
@@ -292,14 +298,8 @@ def clip(*arg,**args):
 			# Get dtype
 			dtypeDS[ds] = sds.info()[3]
 		except:
-			print("no data set")
-	print(gridResolX,gridResolY)
-	print(extremeup,extremedown,extremeleft,extremeright)
-	print(gridDimX,gridDimY)
-	print(NoValueDS)
-	print(dtypeDS)
-	print(dstogrid)
-
+			log.log('e',Nom,"no dataset")
+	
 
 
 	## Start creating new file
@@ -311,8 +311,12 @@ def clip(*arg,**args):
 	########## absolute ########################
 	
 	# Open new file
-	hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
-	sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+	try:
+		hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
+		sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+	except TypeError:
+		hdf = HDF(newfilename.encode('ascii','ignore'), HC.WRITE  | HC.CREATE  |HC.TRUNC)
+		sd  =  SD(newfilename.encode('ascii','ignore'), SDC.WRITE | SDC.CREATE )
 	v=hdf.vgstart()
 	vg={}
 	vg1={}
@@ -340,11 +344,10 @@ def clip(*arg,**args):
 		
 		# Set fill value
 		fv=NoValueDS[ds]
-		print(ds)
 		try:
 			sds.setfillvalue(NoValueDS[ds])
 		except OverflowError:
-			print("erreur",NoValueDS[ds])
+			log.log('e',Nom,"dataset fill value")
 			sds.setfillvalue(0)
 		## write real data
 

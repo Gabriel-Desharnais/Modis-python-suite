@@ -6,7 +6,9 @@ from pyhdf.HDF import *
 from pyhdf.VS import *
 import re
 import numpy as np
+from modisSuite import logMod
 
+Nom="modisSuite Compress"
 
 
 
@@ -134,6 +136,12 @@ def subset(*arg,**karg):
 	newfilename = arg[1]
 	
 	datasettokeep=arg[2:]
+	
+	try:
+		log=karg["log"]
+	except KeyError:
+		log=logMod.Log("",nolog=True)
+	
 	if len(datasettokeep)==0:
 		keepall=True
 	else:
@@ -149,7 +157,10 @@ def subset(*arg,**karg):
     
 
 	# Should eventually check if files exists and can be read ***IMPROVE***
-	HDFF = SD(oldfile)						# This is the list of the FILES to merge
+	try:
+		HDFF = SD(oldfile,SDC.READ)						# This is the list of the FILES to merge
+	except TypeError:
+		HDFF = SD(oldfile.encode('ascii','ignore'),SDC.READ)						# This is the list of the FILES to merge
 	# This is the list of the ATTRIBUTE "StructMetadata.0" of the files
 	attOfF = atribute(HDFF.attributes()["StructMetadata.0"],oldfile)
 
@@ -157,16 +168,16 @@ def subset(*arg,**karg):
 	
 	
 	## Listing all the GRIDS that the new file will have
-	print("Il faut produire un fichier avec les grilles suivantes :")
+
 
 	gridlist = attOfF.listgridname()[1]		# listgridname return a list of all the grids name
 
-	print(gridlist)
+
 
 
 
 	## Listing all the DATASETS that the new file will have
-	print("Et les datasets suivants :")
+
 	
 	# Should check if any grid ***IMPROVE***
 	dslist = attOfF.listdatasetbyname()
@@ -188,7 +199,7 @@ def subset(*arg,**karg):
 
 	for grid in gridlist:
 		# Verification of a grid
-		print("Verification of grid :",grid)
+		
 		
 		paramdict = {}		# Dictionary that keep the actual value that have to be the same
 		
@@ -212,7 +223,7 @@ def subset(*arg,**karg):
 		paramMustSimDict[grid]=paramdict
 			
 			
-		print(paramdict)
+		
 
 # LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
@@ -222,7 +233,7 @@ def subset(*arg,**karg):
 # doing just that                                                             #
 ###############################################################################
 
-	print("new informations")
+	
 	gridResolX={}			# Getting the RESOLUTION in the X direction for each grid
 	gridResolY={}			# Getting the RESOLUTION in the Y direction for each grid
 	extremeup={}			# Getting the UPPER coordinates for each grid
@@ -242,7 +253,7 @@ def subset(*arg,**karg):
 		
 		### Determination of resolution of each grid
 		# ***IMPROVE*** Should check if bigd is none
-		print("Verification of grid :",grid)
+		
 		bigG=attOfF.getgridbyname(grid)				# Getting all the attributes in the grid of a file
 		
 		# Get extreme grid point
@@ -297,13 +308,7 @@ def subset(*arg,**karg):
 			# Get dtype
 			dtypeDS[ds] = sds.info()[3]
 		except:
-			print("no data set")
-	print(gridResolX,gridResolY)
-	print(extremeup,extremedown,extremeleft,extremeright)
-	print(gridDimX,gridDimY)
-	print(NoValueDS)
-	print(dtypeDS)
-	print(dstogrid)
+			log.log('e',Nom,"no dataset")
 
 
 
@@ -330,8 +335,12 @@ def subset(*arg,**karg):
 	########## absolute ########################
 	
 	# Open new file
-	hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
-	sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+	try:
+		hdf = HDF(newfilename, HC.WRITE  | HC.CREATE  |HC.TRUNC)
+		sd  =  SD(newfilename, SDC.WRITE | SDC.CREATE )
+	except TypeError:
+		hdf = HDF(newfilename.encode('ascii','ignore'), HC.WRITE  | HC.CREATE  |HC.TRUNC)
+		sd  =  SD(newfilename.encode('ascii','ignore'), SDC.WRITE | SDC.CREATE )
 	v=hdf.vgstart()
 	vg={}
 	vg1={}
@@ -361,11 +370,11 @@ def subset(*arg,**karg):
 			
 			# Set fill value
 			fv=NoValueDS[ds]
-			print(ds)
+			
 			try:
 				sds.setfillvalue(NoValueDS[ds])
 			except OverflowError:
-				print("erreur",NoValueDS[ds])
+				log.log('e',Nom,"dataset fillvaluet")
 				sds.setfillvalue(0)
 			## write real data
 

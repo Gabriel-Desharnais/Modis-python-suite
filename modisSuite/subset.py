@@ -134,7 +134,10 @@ def subset(*arg,**karg):
 	newfilename = arg[1]
 	
 	datasettokeep=arg[2:]
-	
+	if len(datasettokeep)==0:
+		keepall=True
+	else:
+		keepall=False
 	
 	
 	
@@ -313,11 +316,11 @@ def subset(*arg,**karg):
 	# Deleting dataset not needed for the new file
 	#print("\n\n\n\n\n\n\n\n\n",list(dstogrid.keys()),"\n",dslist,"\n\n\n\n\n\n\n\n\n")
 	for ds in list(dslist):
-		if eval(ds) not in datasettokeep:
+		if not (eval(ds) in datasettokeep or keepall):
 			dslist.remove(ds)
 	
 	for ds in list(dstogrid.keys()):
-		if eval(ds) not in datasettokeep:
+		if not (eval(ds) in datasettokeep or keepall):
 			del dstogrid[ds]
 	
 	#print("\n\n\n\n\n\n\n\n\n",dslist,"\n\n\n\n\n\n\n\n\n")
@@ -352,7 +355,7 @@ def subset(*arg,**karg):
 	for ds in dslist:
 		theGrid=dstogrid[ds]
 		# Get grid name of data set
-		if eval(ds) in datasettokeep:
+		if eval(ds) in datasettokeep or keepall:
 			# Make sure that the set is asked to be there
 			sds = sd.create(eval(ds),dtypeDS[ds],(gridDimY[theGrid],gridDimX[theGrid]))
 			

@@ -6,6 +6,10 @@ This python module can bulk download Modis satelite images from the NSIDC and US
 
 - [X] Download from NSIDC
 - [X] Download from USGS
+- [X] Mosaic tiles
+- [X] Clip tiles
+- [X] Create a new file from a subset of datasets
+- [X] Compress file
 
 For more information go to [https://gabriel-desharnais.github.io/Modis-python-suite/](https://gabriel-desharnais.github.io/Modis-python-suite/)
 
@@ -37,9 +41,9 @@ for day in doo.telechargerTout():
 - [ ] tested on Mageia 5
 
 #### python 3
-- [X] tested on windows
+- [ ] tested on windows
 - [X] tested on Mint 18.1
-- [X] tested on Mageia 5
+- [ ] tested on Mageia 5
 
 ## Version Française
 Ce module python permet de télécharger en masse des images satelites Modis depuis les serveurs de NSIDC et USGS. Il est compatible avec python 2 et python 3.
@@ -49,6 +53,10 @@ Ce module python permet de télécharger en masse des images satelites Modis dep
 
 - [X] Télécharge depuis NSIDC
 - [X] Télécharge depuis USGS
+- [X] Mosaïquer des tuiles
+- [X] Cliper des tuiles
+- [X] Créer un nouveau fichier depuis un sous-ensemble de dataset
+- [X] Compresser un fichier
 
 Pour plus d'information aller sur [https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil](https://gabriel-desharnais.github.io/Modis-python-suite/fr/accueil)
 ### Pour installer
@@ -79,6 +87,6 @@ for jour in doo.telechargerTout():
 - [ ] testé sur Mageia 5
 
 #### python 3
-- [X] testé sur windows
+- [ ] testé sur windows
 - [X] testé sur Mint 18.1
-- [X] testé sur Mageia 5
+- [ ] testé sur Mageia 5

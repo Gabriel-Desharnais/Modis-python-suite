@@ -465,4 +465,9 @@ def mosaic(*arg,**args):
 		hdf.close()
 		
 		# This should return something somehow
-	
+	elif len(arg)>1:
+		afile = arg[0]				# This is the list of the NAME of the files to merge
+		newfilename = arg[1]			# This is the final file NAME
+		# Create a copy
+		from shutil import copyfile
+		copyfile(afile,newfilename)

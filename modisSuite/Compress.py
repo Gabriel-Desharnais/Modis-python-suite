@@ -33,6 +33,8 @@ def compress(*arg,**karg):
 	#open evry data set
 	for dsname in list(sd_id.datasets().keys()):
 		sds_id = sd_id.select(dsname)
+		data=np.copy(sds_id[:])
+		sds_id[:]=0
 		try:
 			sds_id.setcompress(*arg[1])         # args depend on compression type
 		except HDF4Error as msg:
@@ -40,7 +42,7 @@ def compress(*arg,**karg):
 			sds_id.endaccess()
 			sd_id.end()
 			return
-		
+		sds_id[:]=data
 		sds_id.endaccess()
 
 	# Close hdf file to flush compressed data.

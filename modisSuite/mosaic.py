@@ -187,7 +187,7 @@ def mosaic(*arg,**args):
 ###############################################################################
 
 		# List of parameter to check to insure that they are the same
-		paramMustSim = ["Projection","ProjParams","SphereCode","GridOrigin"]
+		paramMustSim = ["Projection","ProjParams","SphereCode"]
 		# Dictionary that will keep all the informations about every file
 		paramMustSimDict = {}
 
@@ -426,8 +426,7 @@ def mosaic(*arg,**args):
 			attstr+="\t\tProjParams=%s\n"%paramMustSimDict[gr]["ProjParams"]
 			# SphereCode
 			attstr+="\t\tSphereCode=%s\n"%paramMustSimDict[gr]["SphereCode"]
-			# GridOrigin
-			attstr+="\t\tGridOrigin=%s\n"%paramMustSimDict[gr]["GridOrigin"]
+
 			
 			attstr+="""\t\tGROUP=Dimension
 		\t\tEND_GROUP=Dimension

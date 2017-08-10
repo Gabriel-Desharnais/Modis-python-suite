@@ -193,7 +193,7 @@ def subset(*arg,**karg):
 ###############################################################################
 
 	# List of parameter to check to insure that they are the same
-	paramMustSim = ["Projection","ProjParams","SphereCode","GridOrigin"]
+	paramMustSim = ["Projection","ProjParams","SphereCode"]
 	# Dictionary that will keep all the informations about every file
 	paramMustSimDict = {}
 
@@ -292,8 +292,8 @@ def subset(*arg,**karg):
 		## Determination of ULC for each grid in each file
 		filGridULC[grid][attOfF.name] = ulp
 		## determination of new dimension for each grid (pixel)
-		gridDimY[grid] = int(dimx)
-		gridDimX[grid] = int(dimy)
+		gridDimY[grid] = int(dimy)
+		gridDimX[grid] = int(dimx)
 
 	for ds in dslist:
 		# For each dataset
@@ -379,16 +379,9 @@ def subset(*arg,**karg):
 			## write real data
 
 			try:
-				# Determine were the data will be writen
-				ulc = filGridULC[theGrid][attOfF.name]
-				# Determine the position on the grid
-				y = (extremeup[theGrid]-ulc[1])/(extremeup[theGrid]-extremedown[theGrid])
-				x = (ulc[0]-extremeleft[theGrid])/(extremeright[theGrid]-extremeleft[theGrid])
-				y = int(y*gridDimY[theGrid])
-				x = int(x*gridDimX[theGrid])
 				# read data from files
 				osds = HDFF.select(eval(ds))
-				sh = osds[:].shape
+				# And write it in the new sds
 				sds[:,:] = osds[:,:]
 				
 				
@@ -427,8 +420,6 @@ def subset(*arg,**karg):
 		attstr+="\t\tProjParams=%s\n"%paramMustSimDict[gr]["ProjParams"]
 		# SphereCode
 		attstr+="\t\tSphereCode=%s\n"%paramMustSimDict[gr]["SphereCode"]
-		# GridOrigin
-		attstr+="\t\tGridOrigin=%s\n"%paramMustSimDict[gr]["GridOrigin"]
 		
 		attstr+="""\t\tGROUP=Dimension
 	\t\tEND_GROUP=Dimension

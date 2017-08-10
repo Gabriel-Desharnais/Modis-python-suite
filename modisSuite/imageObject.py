@@ -3,6 +3,7 @@
 import random
 import os
 import modisSuite as ms
+import shutil
 class imageModis:
     def __init__(self,files,*arg,**args):
         self.files=files
@@ -44,10 +45,10 @@ class Afile:
         self.telecharge=True
     def delete(self):
         os.remove(self.path)
-    def move(self,newfolder):
-        newpath=os.path.join(newfolder,os.path.basename(self.path))
-        os.rename(self.path,newpath)
-        self.path=newpath
+    def move(self,newPath):
+        # Should do something if newPath is a folder
+        os.rename(self.path,newPath)
+        self.path=newPath
     # Should add copy function
     def clip(self,clipName="",**args):
         if clipName=="":

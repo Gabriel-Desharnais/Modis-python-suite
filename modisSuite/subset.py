@@ -14,12 +14,14 @@ Nom="modisSuite Compress"
 
 # Defining the class to manage attributes from the HDF file
 class atribute:
-	def __init__(self,raw,name=""):
+	def __init__(self,raw,name="",dsi=[0,]):
+		#print(dsi)
 		self.name=name
 		self.raw=raw
-		self.GROUP={}
-		self.OBJECT={}
-		self.variable={}
+		self.GROUP = {}
+		self.OBJECT = {}
+		self.OBJECTindex = {}
+		self.variable = {}
 		colect=""
 		colecting=False
 		end=""
@@ -50,12 +52,14 @@ class atribute:
 				colecting=False
 				# End collecting
 				name=end.split("=")[-1]
-				self.GROUP[name]=atribute(colect)
+				self.GROUP[name]=atribute(colect,dsi=dsi)
 			elif len(oe)>0 and len(ob)>0 and line.find(end)>-1:
 				colecting=False
 				# End collecting
 				name=end.split("=")[-1]
-				self.OBJECT[name]=atribute(colect)
+				self.OBJECTindex[name] = dsi[0]
+				dsi[0]+=1
+				self.OBJECT[name] = atribute(colect,dsi=dsi)
 			elif colecting:
 				# Collecting
 				# print(line)
@@ -104,7 +108,21 @@ class atribute:
 		for x in gs.GROUP:
 			if gs.GROUP[x].variable["GridName"] == name:
 				return gs.GROUP[x]
-		return None 
+		return None
+	def orderedDS(self):
+		#get ds by name
+		gr=self.listgrid()[1]
+		ds=self.listdatasetbyname()
+		#print(gr)
+		for g in gr:
+			dsg = self.GROUP["GridStructure"].GROUP[g].GROUP["DataField"]
+			i = dsg.OBJECTindex
+			ii = dsg.OBJECT
+			#print("haha",ds)
+			for e in i:
+				#print(i[e])
+				ds[i[e]] = ii[e].variable["DataFieldName"]
+		return ds
 	def __str__(self):
 		st=""
 		# Ajouter les variables
@@ -127,6 +145,7 @@ class atribute:
 			st+="\n".join(["\t"+h for h in gg])+"\n"
 			st+="END_OBJECT="+x+"\n"
 		return st
+        
 
 
 def subset(*arg,**karg):
@@ -162,7 +181,7 @@ def subset(*arg,**karg):
 	except TypeError:
 		HDFF = SD(oldfile.encode('ascii','ignore'),SDC.READ)						# This is the list of the FILES to merge
 	# This is the list of the ATTRIBUTE "StructMetadata.0" of the files
-	attOfF = atribute(HDFF.attributes()["StructMetadata.0"],oldfile)
+	attOfF = atribute(HDFF.attributes()["StructMetadata.0"],oldfile,dsi=[0,])
 
 		
 	
@@ -180,7 +199,7 @@ def subset(*arg,**karg):
 
 	
 	# Should check if any grid ***IMPROVE***
-	dslist = attOfF.listdatasetbyname()
+	dslist = attOfF.orderedDS()
 
 
 	
@@ -345,6 +364,14 @@ def subset(*arg,**karg):
 	vg={}
 	vg1={}
 	vg2={}
+	
+		
+	## rewrite the gridlist
+	gridlist = []
+	for ds in dslist:
+		if dstogrid[ds] not in gridlist:
+			gridlist.append(dstogrid[ds])
+	
 	for grid in gridlist:
 		vg[grid]=v.attach(-1,write=1)
 		vg[grid]._class="GRID"
@@ -429,7 +456,7 @@ def subset(*arg,**karg):
 		# create list of ds for current grid
 		lsdsgr=[]
 		dsnum=1
-		for ds in dstogrid:
+		for ds in dslist:
 			if dstogrid[ds] == gr:
 				# Add object
 				attstr+="\t\t\tOBJECT=DataField_%i\n"%dsnum

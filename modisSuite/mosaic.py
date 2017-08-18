@@ -12,12 +12,14 @@ from modisSuite import logMod
 Nom="modisSuite Mosaic"
 # Defining the class to manage attributes from the HDF file
 class atribute:
-	def __init__(self,raw,name=""):
+	def __init__(self,raw,name="",dsi=[0,]):
+		#print(dsi)
 		self.name=name
 		self.raw=raw
-		self.GROUP={}
-		self.OBJECT={}
-		self.variable={}
+		self.GROUP = {}
+		self.OBJECT = {}
+		self.OBJECTindex = {}
+		self.variable = {}
 		colect=""
 		colecting=False
 		end=""
@@ -48,12 +50,14 @@ class atribute:
 				colecting=False
 				# End collecting
 				name=end.split("=")[-1]
-				self.GROUP[name]=atribute(colect)
+				self.GROUP[name]=atribute(colect,dsi=dsi)
 			elif len(oe)>0 and len(ob)>0 and line.find(end)>-1:
 				colecting=False
 				# End collecting
 				name=end.split("=")[-1]
-				self.OBJECT[name]=atribute(colect)
+				self.OBJECTindex[name] = dsi[0]
+				dsi[0]+=1
+				self.OBJECT[name] = atribute(colect,dsi=dsi)
 			elif colecting:
 				# Collecting
 				# print(line)
@@ -102,7 +106,21 @@ class atribute:
 		for x in gs.GROUP:
 			if gs.GROUP[x].variable["GridName"] == name:
 				return gs.GROUP[x]
-		return None 
+		return None
+	def orderedDS(self):
+		#get ds by name
+		gr=self.listgrid()[1]
+		ds=self.listdatasetbyname()
+		#print(gr)
+		for g in gr:
+			dsg = self.GROUP["GridStructure"].GROUP[g].GROUP["DataField"]
+			i = dsg.OBJECTindex
+			ii = dsg.OBJECT
+			#print("haha",ds)
+			for e in i:
+				#print(i[e])
+				ds[i[e]] = ii[e].variable["DataFieldName"]
+		return ds
 	def __str__(self):
 		st=""
 		# Ajouter les variables
@@ -128,10 +146,6 @@ class atribute:
         
         
 
-
-
-
-
 def mosaic(*arg,**args):
 	# This function will take files tranfered in *arg and will mosaic them together and produce a new file
 	# mosaic(file1,[file2,file3,...],endfile)
@@ -152,7 +166,8 @@ def mosaic(*arg,**args):
 			except TypeError:
 				a=SD(fil.encode('ascii','ignore'),SDC.READ)
 			lfHDF.append(a)
-			latt.append(atribute(lfHDF[-1].attributes()["StructMetadata.0"],fil))
+			#print("hoho")
+			latt.append(atribute(lfHDF[-1].attributes()["StructMetadata.0"],fil,dsi=[0,]))
 			
 		
 		
@@ -171,10 +186,10 @@ def mosaic(*arg,**args):
 		dslist = []						# This is the list of DATASETS to include in the final file
 		for attOfF in latt:
 			# Should check if any grid ***IMPROVE***
-			dslist += attOfF.listdatasetbyname()
+			dslist = attOfF.orderedDS()
 			
 		# remove double entry
-		dslist = list(set(dslist))
+		# dslist = list(set(dslist))
 
 
 		
@@ -349,6 +364,13 @@ def mosaic(*arg,**args):
 		vg={}
 		vg1={}
 		vg2={}
+		
+		## rewrite the gridlist
+		gridlist = []
+		for ds in dslist:
+			if dstogrid[ds] not in gridlist:
+				gridlist.append(dstogrid[ds])
+				
 		for grid in gridlist:
 			vg[grid]=v.attach(-1,write=1)
 			vg[grid]._class="GRID"
@@ -436,7 +458,7 @@ def mosaic(*arg,**args):
 			# create list of ds for current grid
 			lsdsgr=[]
 			dsnum=1
-			for ds in dstogrid:
+			for ds in dslist:
 				if dstogrid[ds] == gr:
 					# Add object
 					attstr+="\t\t\tOBJECT=DataField_%i\n"%dsnum

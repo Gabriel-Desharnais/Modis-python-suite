@@ -2,9 +2,14 @@
 In the section **module** of this document you can find every module included inside this package. For the documentation on every class and functions of a module click on the module link. In the sections **constant**, **function** and **class** you will find a list of each of them (click on the link to get documentation on it).
 # module
 - [\_\_init\_\_](https://gabriel-desharnais.github.io/Modis-python-suite/en/__init__/module)
+- [clip](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/clip)
+- [convert](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/convert)
+- [compress](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/compress)
 - [Downloader](https://gabriel-desharnais.github.io/Modis-python-suite/en/Downloader/module)
 - [imageObject](https://gabriel-desharnais.github.io/Modis-python-suite/en/imageObject/module)
 - [logMod](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/module)
+- [mosaic](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/mosaic)
+- [subset](https://gabriel-desharnais.github.io/Modis-python-suite/en/logMod/subset)
 
 # class
 - [modisSuite.downloader](https://gabriel-desharnais.github.io/Modis-python-suite/en/main/downloader)

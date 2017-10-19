@@ -126,8 +126,8 @@ class telecharger:
             h=session.get(h.headers["Location"],auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
         def authentificationNSIDC():
             form={}
-            formfield=["utf8","authenticity_token","client_id","redirect_uri","response_type","state","stay_in","commit"]
-            r=session.get(URL+"/MOST")
+            formfield=["utf8","authenticity_token","client_id","redirect_uri","commit"]#,"response_type","state","stay_in"
+            r=session.get("https://urs.earthdata.nasa.gov")#
             rs=r.text
             
             for name in formfield:
@@ -141,16 +141,18 @@ class telecharger:
             form["username"]=self.utilisateur
             form["password"]=self.motdepasse
             h=session.post('https://urs.earthdata.nasa.gov/login',data=form)
+            h=session.get(URL+"/MOST")
             import time
             time.sleep(3)
-            a=h.text.find('redirectURL = "')+len('redirectURL = "')
+            #print(h.text)
+            #a=h.text.find('redirectURL = "')+len('redirectURL = "')
             
-            b=h.text[a:].find('"')+a
-            try:
-                session.get(h.text[a:b])
-            except requests.exceptions.ConnectionError:
-                time.sleep(1)
-                session.get(h.text[a:b])
+            #b=h.text[a:].find('"')+a
+            #try:
+                #session.get(h.text[a:b])
+            #except requests.exceptions.ConnectionError:
+                #time.sleep(1)
+                #session.get(h.text[a:b])
         authentificationNSIDC()
         authentificationUSGS()
     def listefichiersATelecharger(self,addresseDate):

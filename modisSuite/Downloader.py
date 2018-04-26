@@ -122,7 +122,7 @@ class telecharger:
     def authentification(self,session):
         #Devrait éventuellement déterminer lorsque l'authentification ne réussi pas
         def authentificationUSGS():
-            h=session.get("https://e4ftl01.cr.usgs.gov/MOLA/MYD11B2.006/2002.07.04/MYD11B2.A2002185.h01v09.006.2015146152740.hdf",auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
+            h=session.get("https://e4ftl01.cr.usgs.gov/MOLA",auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
             h=session.get(h.headers["Location"],auth=(self.utilisateur,self.motdepasse),allow_redirects=False)
         def authentificationNSIDC():
             form={}

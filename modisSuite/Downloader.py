@@ -153,8 +153,14 @@ class telecharger:
             #except requests.exceptions.ConnectionError:
                 #time.sleep(1)
                 #session.get(h.text[a:b])
-        authentificationNSIDC()
-        authentificationUSGS()
+        try:
+            authentificationNSIDC()
+        except:
+            print("NSIDC authentication error")
+        try:
+            authentificationUSGS()
+        except:
+            print("USGS authentication error")
     def listefichiersATelecharger(self,addresseDate):
         listefichiers={}
         typeOfFile=["\.hdf","\.hdf\.xml"]

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import modisSuite
 setup(
     name='modisSuite',
-    version='1.0.0.2',
+    version='1.0.0.20',
     description='Python module to download modis data',
     url='https://github.com/Gabriel-Desharnais/Modis-python-suite',
     author='Gabriel Desharnais',

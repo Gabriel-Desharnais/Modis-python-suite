@@ -25,6 +25,7 @@ for day in doo.telechargerTout():
   day.mosaic()
 ```
 # Documentation
+You can find the user manual [here](https://github.com/Gabriel-Desharnais/Modis-python-suite/en/userManual)
 You can find the code documention [here](https://gabriel-desharnais.github.io/Modis-python-suite/en/package)
 # Support
 If you are having any problems, or have any sugesstion for improvement, just post an issue on the github page. I will be more than happy to help you in your project. [issues](https://github.com/Gabriel-Desharnais/Modis-python-suite/issues)
